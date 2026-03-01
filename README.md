@@ -2,7 +2,7 @@
 
 Simple, modular image preprocessing pipeline using OpenCV.
 
-## Setup
+## Quick Start
 
 1. Create and activate a virtual environment (Windows PowerShell):
 
@@ -18,39 +18,15 @@ pip install -r requirements.txt
 python src\cli.py --input path\to\image.jpg --output out\image_preproc.jpg
 ```
 
-What is included
-
-- `src/preprocessing` — modular preprocessing functions and `Pipeline` class
-- `src/cli.py` — simple CLI to run a pipeline on an image
-- `tests/test_pipeline.py` — basic unit test
-
-## Quick Start
-
-1. Create a virtual environment and install dependencies:
-
-```bash
-python -m venv .venv
-.
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-2. Use the CLI to process a directory of images:
-
-```bash
-python -m src.cli --input data/input --output data/output --resize 512 512
-```
-
 3. Run tests:
 
 ```bash
 pytest -q
 ```
 
-Package layout
+What is included
 
-- `src/preprocessing` — core pipeline and transforms
-- `src/cli.py` — small CLI to run preprocessing over a folder
+- `src/preprocessing` — modular preprocessing functions and `Pipeline` class
+- `src/cli.py` — simple CLI to run a pipeline on an image
+- `tests/test_pipeline.py` — basic unit test
 
-See docs in the `src/preprocessing` package for API examples.

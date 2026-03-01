@@ -22,8 +22,5 @@ __all__ = [
     "Pipeline",
     "build_default_pipeline",
 ]
+
 """Image preprocessing package."""
-
-from .pipeline import Pipeline  # re-export
-
-__all__ = ["Pipeline"]
