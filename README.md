@@ -2,7 +2,7 @@
 
 Simple, modular image preprocessing pipeline using OpenCV.
 
-Setup
+## Setup
 
 1. Create and activate a virtual environment (Windows PowerShell):
 
@@ -23,11 +23,8 @@ What is included
 - `src/preprocessing` — modular preprocessing functions and `Pipeline` class
 - `src/cli.py` — simple CLI to run a pipeline on an image
 - `tests/test_pipeline.py` — basic unit test
-# Image Preprocessing Pipeline
 
-A small Python package for building image preprocessing pipelines using OpenCV.
-
-Quick start
+## Quick Start
 
 1. Create a virtual environment and install dependencies:
 
