@@ -15,7 +15,11 @@ pip install -r requirements.txt
 2. Example usage (CLI):
 
 ```powershell
-python src\cli.py --input path\to\image.jpg --output out\image_preproc.jpg
+# single file
+python src\cli.py --input data\input\image.jpg --output data\output\image_preproc.jpg
+
+# process a directory recursively (preserves structure)
+python src\cli.py --input data\input --output data\output
 ```
 
 3. Run tests:
