@@ -1,6 +1,7 @@
 from typing import Callable, List, Tuple
 import cv2
 import numpy as np
+from numpy.lib.stride_tricks import as_strided
 
 
 def to_grayscale(img: np.ndarray) -> np.ndarray:
@@ -24,7 +25,11 @@ def median_denoise(img: np.ndarray, ksize: int = 3) -> np.ndarray:
 
 
 def hybrid_denoise(img: np.ndarray, window_size: int = 3) -> np.ndarray:
-
+    """Optimized hybrid filter using vectorized NumPy operations.
+    
+    Uses stride tricks to avoid nested Python loops, making it significantly faster
+    than the naive implementation while maintaining identical results.
+    """
     if len(img.shape) == 3:
         channels = cv2.split(img)
         filtered_channels = [hybrid_denoise(ch, window_size) for ch in channels]
@@ -32,15 +37,26 @@ def hybrid_denoise(img: np.ndarray, window_size: int = 3) -> np.ndarray:
     
     h, w = img.shape
     pad = window_size // 2
-    padded = np.pad(img, pad, mode='constant', constant_values=0)
-    output = np.zeros_like(img, dtype=np.float32)
+    padded = np.pad(img.astype(np.float32), pad, mode='constant', constant_values=0)
     
-    for y in range(h):
-        for x in range(w):
-            window = padded[y:y + window_size, x:x + window_size]
-            median_val = np.median(window)
-            adjusted = (window + median_val) / 2
-            output[y, x] = np.mean(adjusted)
+    # Use stride tricks to create a view of all windows without copying
+    windows = as_strided(
+        padded,
+        shape=(h, w, window_size, window_size),
+        strides=(padded.strides[0], padded.strides[1], padded.strides[0], padded.strides[1])
+    )
+    
+    # Reshape to (h, w, window_size*window_size) for batch operations
+    windows_flat = windows.reshape(h, w, -1)
+    
+    # Compute medians for all windows at once
+    medians = np.median(windows_flat, axis=2, keepdims=True)
+    
+    # Adjust all pixels: (pixel + median) / 2
+    adjusted = (windows_flat + medians) / 2.0
+    
+    # Compute mean of adjusted values for each window
+    output = np.mean(adjusted, axis=2)
     
     return output.astype(np.uint8)
 
