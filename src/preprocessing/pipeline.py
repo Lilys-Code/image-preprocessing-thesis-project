@@ -23,6 +23,28 @@ def median_denoise(img: np.ndarray, ksize: int = 3) -> np.ndarray:
     return cv2.medianBlur(img, ksize)
 
 
+def hybrid_denoise(img: np.ndarray, window_size: int = 3) -> np.ndarray:
+
+    if len(img.shape) == 3:
+        channels = cv2.split(img)
+        filtered_channels = [hybrid_denoise(ch, window_size) for ch in channels]
+        return cv2.merge(filtered_channels)
+    
+    h, w = img.shape
+    pad = window_size // 2
+    padded = np.pad(img, pad, mode='constant', constant_values=0)
+    output = np.zeros_like(img, dtype=np.float32)
+    
+    for y in range(h):
+        for x in range(w):
+            window = padded[y:y + window_size, x:x + window_size]
+            median_val = np.median(window)
+            adjusted = (window + median_val) / 2
+            output[y, x] = np.mean(adjusted)
+    
+    return output.astype(np.uint8)
+
+
 def equalize_hist(img: np.ndarray) -> np.ndarray:
     # For grayscale
     if len(img.shape) == 2:
@@ -84,7 +106,8 @@ class Pipeline:
 def build_default_pipeline(target_size: Tuple[int, int] = (256, 256)) -> Pipeline:
     p = Pipeline()
     p.add(resize, size=target_size)
-    p.add(gaussian_denoise, ksize=(5, 5), sigma=0)
-    p.add(equalize_hist)
-    p.add(normalize)
+    p.add(hybrid_denoise)
+    # p.add(gaussian_denoise, ksize=(5, 5), sigma=0)
+    # p.add(equalize_hist)
+    # p.add(normalize)
     return p
